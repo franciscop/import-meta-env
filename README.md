@@ -1,50 +1,68 @@
-# template-for-proposals
+# Environment Variables
 
-A repository template for ECMAScript proposals.
+A proposal to standardize the way JS reads environment variables across all of the runtimes.
 
-## Before creating a proposal
+```js
+import.meta.env.MY_VARIABLE;
+```
 
-Please ensure the following:
-  1. You have read the [process document](https://tc39.github.io/process-document/)
-  1. You have reviewed the [existing proposals](https://github.com/tc39/proposals/)
-  1. You are aware that your proposal requires being a member of TC39, or locating a TC39 delegate to “champion” your proposal
+## Status
 
-## Create your proposal repo
+Authors: Francisco Presencia
 
-Follow these steps:
-  1. Click the green [“use this template”](https://github.com/tc39/template-for-proposals/generate) button in the repo header. (Note: Do not fork this repo in GitHub's web interface, as that will later prevent transfer into the TC39 organization)
-  1. Update ecmarkup and the biblio to the latest version: `npm install --save-dev ecmarkup@latest && npm install --save-dev --save-exact @tc39/ecma262-biblio@latest`.
-  1. Go to your repo settings page:
-      1. Under “General”, under “Features”, ensure “Issues” is checked, and disable “Wiki”, and “Projects” (unless you intend to use Projects)
-      1. Under “Pull Requests”, check “Always suggest updating pull request branches” and “automatically delete head branches”
-      1. Under the “Pages” section on the left sidebar, and set the source to “deploy from a branch” and check “Enforce HTTPS”
-      1. Under the “Actions” section on the left sidebar, under “General”, select “Read and write permissions” under “Workflow permissions” and click “Save”
-  1. [“How to write a good explainer”][explainer] explains how to make a good first impression.
+Champions: Francisco Presencia
 
-      > Each TC39 proposal should have a `README.md` file which explains the purpose
-      > of the proposal and its shape at a high level.
-      >
-      > ...
-      >
-      > The rest of this page can be used as a template ...
+This proposal is at Stage 0 of The TC39 Process.
 
-      Your explainer can point readers to the `index.html` generated from `spec.emu`
-      via markdown like
+## Motivation
 
-      ```markdown
-      You can browse the [ecmarkup output](https://ACCOUNT.github.io/PROJECT/)
-      or browse the [source](https://github.com/ACCOUNT/PROJECT/blob/HEAD/spec.emu).
-      ```
+Javascript has grown a lot and now it's used in a large variety of runtimes, environments and systems ("runtimes" from now on). While ECMASCript has ensured the language is the same for all of them, there are many parts that are left to each runtime to decide. This includes things like lifecycle of the application, interaction with the host OS, some globals, etc. This makes writing universal code (also called isomorphic) to be a challenge some times; tc39 has made great advances with the standards and so today in virtually all environments you can use `fetch()`, while this was very fragmented just 5 years ago and you needed to write or import large amounts of code to achieve the same thing.
 
-      where *ACCOUNT* and *PROJECT* are the first two path elements in your project's Github URL.
-      For example, for github.com/**tc39**/**template-for-proposals**, *ACCOUNT* is “tc39”
-      and *PROJECT* is “template-for-proposals”.
+Which brings us to this proposal. Today, to use environment variables (which can come from a variety of places) you have to write different code for different environments, some examples:
+
+```js
+// Node, the classic (+many others), but this depends on `process` which is not a standard
+process.env.MY_VARIABLE;
+
+// React (like Node, with mandatory prefix)
+process.env.REACT_APP_MY_VARIABLE;
+
+// Bun (though the Node ones also work)
+Bun.env.MY_VARIABLE;
+
+// Netlify
+Netlify.env.get('MY_VARIABLE');
+
+// Cloudflare Workers
+async fetch(request, env, ctx) {
+  env.MY_VARIABLE; // ??
+}
+```
+
+## Proposal
+
+My proposal is to create a single place where the Environment Variables are all already loaded from the environment:
+
+```js
+import.meta.env.MY_VARIABLE;
+```
+
+Note: props to Vite, since they are the ones who started using this first AFAIK.
+
+This is the way that Vite does it, and it seems to be a great way to use `import.meta`, a place that has already been used in the past to load things that were left to `process` or other meta-variables in the past.
+
+Specifically:
+
+- Define the read-only property `env` in `import.meta` as a plain object.
+  - You cannot change it with `import.meta.env = '...';` (INVALID).
+  - However, individual keys and values can be overwritten, e.g. `import.meta.env.MY_DB = 'hello';` (VALID).
+- The keys are the environment variable keys. The environments of some UIs differentiate them.
+- The values are all defined as **strings**. The environment should not attempt to parse them or cast them into different types.
+- If there is none, then `import.meta.env` should be an empty object `{}`.
+- We purposefully do not specify where these variables come from, that is left to the specific runtime.
+
+## Definitions
+
+- Environment Variable: a variable set by the runtime (Node.js, Bun, Cloudflare Worker, Netlify Function, etc) that is accessible by Javascript. This is usually different in different environments on purpose, e.g. in a local dev server you'd have a different DB access than in a remote production server.
 
 
-## Maintain your proposal repo
-
-  1. Make your changes to `spec.emu` (ecmarkup uses HTML syntax, but is not HTML, so I strongly suggest not naming it “.html”)
-  1. Any commit that makes meaningful changes to the spec, should run `npm run build` to verify that the build will succeed and the output looks as expected.
-  1. Whenever you update `ecmarkup`, run `npm run build` to verify that the build will succeed and the output looks as expected.
-
-  [explainer]: https://github.com/tc39/how-we-work/blob/HEAD/explainer.md
