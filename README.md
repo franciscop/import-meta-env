@@ -56,7 +56,7 @@ Specifically:
 - Define the read-only property `env` in `import.meta` as a plain object.
   - You cannot change it with `import.meta.env = '...';` (INVALID).
   - However, individual keys and values can be overwritten, e.g. `import.meta.env.MY_DB = 'hello';` (VALID).
-- The keys are the environment variable keys. The environments of some UIs differentiate them.
+- The keys are the environment variable keys, which are alphanumeric strings (usually in uppercase, but this spec does not force it).
 - The values are all defined as **strings**. The environment should not attempt to parse them or cast them into different types.
 - If there is none, then `import.meta.env` should be an empty object `{}`.
 - We purposefully do not specify where these variables come from, that is left to the specific runtime.
