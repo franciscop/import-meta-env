@@ -61,6 +61,29 @@ Specifically:
 - If there is none, then `import.meta.env` should be an empty object `{}`.
 - We purposefully do not specify where these variables come from, that is left to the specific runtime.
 
+## Example
+
+If we are working with Node and a single `index.js` file, this should happen:
+
+```js
+console.log(import.meta.env);
+// {}
+```
+
+However if we create the file `.env` as this:
+
+```text
+HELLO=world
+DB=https://mydb.com/connect
+```
+
+And then load the same index.js as above, but with the flag `node --env-file=.env index.js`:
+
+```js
+console.log(import.meta.env);
+// { HELLO: "world", DB: "https://mydb.com/connect" }
+```
+
 ## Definitions
 
 - Environment Variable: a variable set by the runtime (Node.js, Bun, Cloudflare Worker, Netlify Function, etc) that is accessible by Javascript. This is usually different in different environments on purpose, e.g. in a local dev server you'd have a different DB access than in a remote production server.
