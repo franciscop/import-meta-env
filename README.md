@@ -1,6 +1,6 @@
 # Environment Variables
 
-A proposal to standardize the way JS reads environment variables across all of the runtimes.
+Define the way JS reads environment variables across different runtimes.
 
 ```js
 const myvar = import.meta.env.MY_VARIABLE;
