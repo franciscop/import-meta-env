@@ -1,6 +1,6 @@
 # Environment Variables
 
-Define the way JS reads environment variables across different runtimes.
+Define the way JS reads environment variables across different runtimes:
 
 ```js
 const myvar = import.meta.env.MY_VARIABLE;
