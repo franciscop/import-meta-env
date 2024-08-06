@@ -12,7 +12,7 @@ Authors: Francisco Presencia
 
 Champions: Francisco Presencia
 
-This proposal is at Stage 0 of The TC39 Process.
+~This proposal is at Stage 0 of The TC39 Process.~ This proposal is for WinterCG.
 
 ## Motivation
 
