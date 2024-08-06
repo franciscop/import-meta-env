@@ -3,7 +3,7 @@
 A proposal to standardize the way JS reads environment variables across all of the runtimes.
 
 ```js
-import.meta.env.MY_VARIABLE;
+const myvar = import.meta.env.MY_VARIABLE;
 ```
 
 ## Status
